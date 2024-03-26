@@ -9,6 +9,8 @@
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
     <link rel="manifest" href="manifest.json" />
+
+    <link rel="icon" href="kakulator-icone.png" />
     <style>
       body {
         margin: 0;
@@ -59,7 +61,7 @@
 
       .pilih .gambar {
         margin-left: 10px;
-        border: 2px solid black;
+        border: 2px solid rgb(37, 37, 37);
         width: 30px;
         height: 30px;
         padding: 5px;
@@ -67,6 +69,11 @@
         border-radius: 50%;
         object-fit: contain;
         cursor: pointer;
+        box-shadow: 1px 0px 2px black;
+      }
+
+      .pilih .gambar:active {
+        box-shadow: 0px 0px 0px;
       }
 
       .hasil {
@@ -151,6 +158,12 @@
             width="20"
             src="upin-ipin.png"
             alt="" />
+          <img
+            onclick="gambar(this, '#ff00cc')"
+            class="gambar"
+            width="20"
+            src="Masha.webp"
+            alt="" />
         </div>
         <input
           class="hasil"
@@ -182,7 +195,7 @@
                 type="button"
                 class="bg-dark"
                 onclick="klikTombol(this)"
-                value="/" />
+                value="÷" />
             </td>
           </tr>
           <tr>
@@ -200,7 +213,7 @@
                 type="button"
                 class="bg-dark"
                 onclick="klikTombol(this)"
-                value="*" />
+                value="x" />
             </td>
           </tr>
           <tr>
@@ -287,6 +300,7 @@
         $("img#gambar-utama").attr("src", item[0]);
         $(".header").css("background-color", item[1]);
       }
+
       function notKey(key) {
         return $("input.hasil").val().startsWith(key);
       }
@@ -304,9 +318,13 @@
         console.log("inihuruf terahir" + key.slice(0, -1));
         var key = key;
         if (
-          notKey("*") ||
-          notKey("/") ||
+          notKey("x") ||
+          notKey("÷") ||
           notKey(".") ||
+          notKey("+x") ||
+          notKey("+÷") ||
+          notKey("-x") ||
+          notKey("-÷") ||
           notKey("-+") ||
           notKey("+-")
         ) {
@@ -325,7 +343,7 @@
         ) {
           $("input.hasil").val(key.substring(2));
         } else if (
-          /(--|\+\+|\*\/|\/\*|\*\*|\/\/|\*-\+|\*-\*|\*-\*|\/-\+|\/-\*|\/-\*|\/-\*|\/--|\*-\/|\-\*|\-\/|\-\+-|\+-\+)$/.test(
+          /(--|\+\+|\x\÷|\÷\x|\x\x|\÷\÷|\x-\+|\x-\x|\x-\x|\÷-\+|\÷-\x|\÷-\x|\÷-\x|\÷--|\x-\÷|\-\x|\-\÷|\-\+-|\+-\+|\+\.|\-\.|\x\.|\÷\.|\.\+|\.\-|\.\x|\.\÷|\.\.)$/.test(
             key
           )
         ) {
@@ -335,16 +353,12 @@
         console.log(key.slice(-2));
       });
 
-      $(".jumlah").click(() => {
-        var nilai = $("input.hasil").val().replace(/%/g, "/100");
-
-        $("input.hasil").val(eval(nilai));
-        console.log(eval($("input.hasil").val()));
-      });
-
       function klikTombol(input) {
         if (input.value == "=") {
-          $("input.hasil").val(eval($("input.hasil").val()));
+          var hasil = $("input.hasil").val();
+          hasil = hasil.replace("÷", "/");
+          hasil = hasil.replace("x", "*");
+          $("input.hasil").val(eval(hasil));
           $("input.hasil").css("font-size", 50 + "px");
         } else {
           $("input.hasil").val($("input.hasil").val() + input.value);
@@ -368,37 +382,6 @@
         }
         $("input.hasil").val($("input.hasil").val().slice(0, -1));
       });
-
-      if ("serviceWorker" in navigator) {
-        window.addEventListener("load", function () {
-          navigator.serviceWorker
-            .register("/service-worker.js")
-            .then(function (registration) {
-              console.log(
-                "ServiceWorker registration successful with scope: ",
-                registration.scope
-              );
-            })
-            .catch(function (err) {
-              console.log("ServiceWorker registration failed: ", err);
-            });
-        });
-      }
-
-      window.addEventListener("load", () => {
-        registerSW();
-      });
-
-      // Register the Service Worker
-      async function registerSW() {
-        if ("serviceWorker" in navigator) {
-          try {
-            await navigator.serviceWorker.register("serviceworker.js");
-          } catch (e) {
-            console.log("SW registration failed");
-          }
-        }
-      }
     </script>
   </body>
 </html>
